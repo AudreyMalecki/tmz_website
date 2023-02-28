@@ -79,6 +79,8 @@ if form_button:
 
     response = requests.get(api_url, params=params).json()
 
+    # KPIs retrieved from our API of prediction
+
     estimated_ca = round(response.get('estimated_ca'), 4)
 
     lighthouse_score = round(response.get('lighthouse_score'), 4)
@@ -103,6 +105,13 @@ if form_button:
     st.write('The estimated CA is: ', estimated_ca)
     st.write('The Lighthouse score is: ', lighthouse_score)
     st.write(TTFB, Social)
+
+    # Highlight major KPIs
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Lighthouse Score", f'{round(lighthouse_score*100,0)}%')
+    col2.metric("Bounce Rate", f'{round(BounceRate*100, 2)}%')
+    col3.metric("Estimated Monthly Visits", EstimatedMonthlyVisits)
+    col4.metric("Page Per Visit", round(PagePerVisit, 2))
 
 
 
