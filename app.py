@@ -72,7 +72,7 @@ with st.form(key='params_for_api'):
 
 
     # Get params for API request
-    api_url = 'http://127.0.0.1:8000/predict'
+    api_url = 'https://usecasetmzimage-2y534oizmq-ew.a.run.app/predict'
 
     def get_api_params(site_url, blocklist_value=0, geo='Other', ads_format_answer=[]):
         dicto = {'site_url' : site_url,
