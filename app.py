@@ -1,9 +1,19 @@
 import streamlit as st
 import requests
+from numerize import numerize
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
 
+st.markdown(
 '''
-# tmz_use_case front
+# The Moneytizer API! 🚀
 '''
+)
+
+# Add logo at the beginning
+
+
 
 # Parameters in the form
 with st.form(key='params_for_api'):
@@ -79,8 +89,9 @@ if form_button:
 
     response = requests.get(api_url, params=params).json()
 
-    # KPIs retrieved from our API of prediction
+    st.balloons()
 
+    # KPIs retrieved from our API of prediction
     estimated_ca = round(response.get('estimated_ca'), 4)
 
     lighthouse_score = round(response.get('lighthouse_score'), 4)
@@ -90,32 +101,71 @@ if form_button:
     FCP = response.get('FCP')
     INP = response.get('INP')
     TTFB = response.get('TTFB')
-    Social = response.get('Social')
-    Mail = response.get('Mail')
-    Referrals = response.get('Referrals')
-    Search = response.get('Search')
-    Direct = response.get('Direct')
+    Social = float(response.get('Social'))
+    Mail = float(response.get('Mail'))
+    Referrals = float(response.get('Referrals'))
+    Search = float(response.get('Search'))
+    Direct = float(response.get('Direct'))
     BounceRate = response.get('BounceRate')
     PagePerVisit = response.get('PagePerVisit')
     Category = response.get('Category')
     EstimatedMonthlyVisits = response.get('EstimatedMonthlyVisits')
 
-    # Write the result
-    st.write(params)
+    # # Write the result for test
+    # st.write(params)
+    # st.write('The Lighthouse score is: ', lighthouse_score)
+    # st.write(TTFB, Social)
+
+    # CA prediction
     st.write('The estimated CA is: ', estimated_ca)
-    st.write('The Lighthouse score is: ', lighthouse_score)
-    st.write(TTFB, Social)
 
     # Highlight major KPIs
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Lighthouse Score", f'{round(lighthouse_score*100,0)}%')
     col2.metric("Bounce Rate", f'{round(BounceRate*100, 2)}%')
-    col3.metric("Estimated Monthly Visits", EstimatedMonthlyVisits)
+    col3.metric("Estimated Monthly Visits", numerize.numerize(EstimatedMonthlyVisits))
     col4.metric("Page Per Visit", round(PagePerVisit, 2))
 
+    # Display category website
+    st.write('Website Category: ', Category.title())
 
+    # Traffic repartition
+    labels = ['Social', 'Mail', 'Referrals', 'Search', 'Direct']
+    y = np.array([Social, Mail, Referrals, Search, Direct])
 
-# All additionnal KPIs from API
-# Pie chart for traffic?
-# Métrique les unes à côté des autres?
-# Ajouter une carte pour la géographie du site
+    dict_kpis = {}
+    for i, j in zip(labels, y):
+        dict_kpis[i] = j
+
+    hist_values = pd.DataFrame(dict_kpis, index=[0])
+    # st.dataframe(hist_values)
+    # pd.DataFrame(data=y, index=[0], columns=['Social', 'Mail', 'Referrals', 'Search', 'Direct'])
+
+    # st.bar_chart(x=labels, y=y)
+    fig, ax = plt.subplots()
+    ax.bar(x=labels, height=y)
+
+    st.pyplot(fig)
+
+    # # Pie chart
+    # y = np.array([Social, Mail, Referrals, Search, Direct])
+
+    # fig, ax = plt.subplots()
+    # ax.pie(y, labels=['Social', 'Mail', 'Referrals', 'Search', 'Direct'])
+    # fig.legend()
+
+    # st.pyplot(fig)
+
+    # # Map to localize the web site
+    # def geocode(address):
+    #     params = { "q": address, 'format': 'json' }
+    #     places = requests.get(f"https://nominatim.openstreetmap.org/search", params=params).json()
+    #     return [places[0]['lat'], places[0]['lon']]
+
+    # coordinates = {
+    #     'latitude': [float(geocode(geo)[0])],
+    #     'longitude': [float(geocode(geo)[1])]
+    # }
+
+    # df = pd.DataFrame(coordinates)
+    # st.map(coordinates)
