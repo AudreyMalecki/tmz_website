@@ -2,5 +2,5 @@ streamlit
 requests
 numerize
 numpy
-matplotlib.pyplot
+matplotlib
 pandas
