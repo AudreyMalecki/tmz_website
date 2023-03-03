@@ -62,11 +62,12 @@ with st.form(key='params_for_api'):
 
     columns = st.columns(5)
     global ads_format_list
-    ads_format_list = [1, 2, 3, 4, 5, 6, 11, 15, 16, 19, 20, 24, 27, 28, 30, 31, 34, 38, 39, 43, 44, 46]
+    # ads_format_list = [1, 2, 3, 4, 5, 6, 11, 15, 16, 19, 20, 24, 27, 28, 30, 31, 34, 38, 39, 43, 44, 46]
+    ads_format_list = ['Megabanner', 'Pave Haut', 'Grand Angle', 'Skyscraper', 'Billboard', 'Megabanner Bas', 'Pave Bas', 'Mega Skyscrapper', 'Habillage', 'Reco Contenu', 'Footer', 'In Feed', 'Pre-roll', 'Native', 'In-Image', 'Pop Under']
     ads_format_answer = []
     column_num = 0
     for i, e in enumerate(ads_format_list):
-        if columns[i%5].checkbox(f'Format {e}'):
+        if columns[i%5].checkbox(f'{e}', ):
             ads_format_answer.append(1)
         else:
             ads_format_answer.append(0)
@@ -76,7 +77,7 @@ with st.form(key='params_for_api'):
 
 
     # Get params for API request
-    api_url = 'http://127.0.0.1:8000/predict'
+    api_url = 'https://usecasetmzimage-2y534oizmq-ew.a.run.app/predict'
 
     def get_api_params(site_url, blocklist_value=0, geo='Other', ads_format_answer=[]):
         dicto = {'site_url' : site_url,
@@ -101,42 +102,44 @@ if form_button:
     # KPIs retrieved from our API of prediction
     estimated_ca = round(response.get('estimated_ca'), 4)
 
-    lighthouse_score = round(response.get('lighthouse_score'), 4)
-    LCP = response.get('LCP')
-    FID = response.get('FID')
-    CLS = response.get('CLS')
-    FCP = response.get('FCP')
-    INP = response.get('INP')
-    TTFB = response.get('TTFB')
-    Social = float(response.get('Social'))
-    Mail = float(response.get('Mail'))
-    Referrals = float(response.get('Referrals'))
-    Search = float(response.get('Search'))
-    Direct = float(response.get('Direct'))
-    BounceRate = response.get('BounceRate')
-    PagePerVisit = response.get('PagePerVisit')
+    lighthouse_score = round(float(response.get('lighthouse_score')) *100, 0) if response.get('lighthouse_score') != 'Not found' else 'Not found'
+    # LCP = response.get('LCP')
+    # FID = response.get('FID')
+    # CLS = response.get('CLS')
+    # FCP = response.get('FCP')
+    # INP = response.get('INP')
+    # TTFB = response.get('TTFB')
+    Social = float(response.get('Social')) if response.get('Social') != 'Not found' else 0
+    Mail = float(response.get('Mail')) if response.get('Mail') != 'Not found' else 0
+    Referrals = float(response.get('Referrals')) if response.get('Referrals') != 'Not found' else 0
+    Search = float(response.get('Search')) if response.get('Search') != 'Not found' else 0
+    Direct = float(response.get('Direct')) if response.get('Direct') != 'Not found' else 0
+    BounceRate = round(float(response.get('BounceRate')) *100, 2) if response.get('BounceRate') != 'Not found' else 'Not found'
+    PagePerVisit = round(float(response.get('PagePerVisit')), 2) if response.get('PagePerVisit') != 'Not found' else 'Not found'
     Category = response.get('Category')
-    EstimatedMonthlyVisits = response.get('EstimatedMonthlyVisits')
+    EstimatedMonthlyVisits = numerize.numerize(int(response.get('EstimatedMonthlyVisits'))) if response.get('EstimatedMonthlyVisits') != 'Not found' else 'Not found'
 
     # CA prediction
     # st.write('The estimated CA is: ', estimated_ca)
-    # st.markdown('''
-    #             ### Your estimated CA is:
-    #             ''')
+    st.markdown('''### Your estimated CA is:''')
     columns_2 = st.columns(3)
-    columns_2[1].metric("Your estimated CA is", round(estimated_ca, 2))
-
+    columns_2[1].metric("  ", round(estimated_ca, 2))
+    st.markdown('''
+                ###### Additional insights about your website:
+                ''')
 
     # Highlight major KPIs
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Lighthouse Score", f'{round(lighthouse_score*100,0)}%')
-    col2.metric("Bounce Rate", f'{round(BounceRate*100, 2)}%')
-    col3.metric("Estimated Monthly Visits", numerize.numerize(EstimatedMonthlyVisits))
-    col4.metric("Page Per Visit", round(PagePerVisit, 2))
+    col1.metric("Lighthouse Score", f'{lighthouse_score}%')
+    col2.metric("Bounce Rate", f'{BounceRate}%')
+    col3.metric("Estimated Monthly Visits", EstimatedMonthlyVisits)
+    col4.metric("Page Per Visit", PagePerVisit)
 
     # Display category website
-    columns_3 = st.columns([1, 3])
-    columns_3[0].metric('Website Category: ', Category.title())
+    st.write('Website Category: ', Category.title())
+
+    # Last 2 graphs space
+    columns_3 = st.columns(2)
 
     # Traffic repartition
     labels = ['Social', 'Mail', 'Referrals', 'Search', 'Direct']
@@ -148,9 +151,15 @@ if form_button:
 
     hist_values = pd.DataFrame(dict_kpis, index=[0])
     fig, ax = plt.subplots()
-    ax.bar(x=labels, height=y, color=['blue', 'red', 'yellow', 'green'])
+    ax.bar(x=labels, height=y, color=['blue', 'red', 'yellow', 'green', 'orange'])
+    ax.get_yaxis().set_visible(False)
 
-    columns_3[1].pyplot(fig)
+    columns_3[0].pyplot(fig)
+    columns_3[0].caption('Traffic Sources Repartition')
+
+    # Display the clustering image
+    image_clustering = Image.open('images/3d_clustering_zoom.png')
+    columns_3[1].image(image_clustering, use_column_width=True, caption='Location within Data Clustering')
 
     # # Pie chart
     # y = np.array([Social, Mail, Referrals, Search, Direct])
