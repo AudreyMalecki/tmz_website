@@ -4,29 +4,27 @@ from numerize import numerize
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from PIL import Image
 
+# Adding logo at the beginning
+columns_1 = st.columns(3)
+
+image = Image.open('images/logomoneytizer.png')
+columns_1[2].image(image, use_column_width=True)
+
+# API title
 st.markdown(
 '''
-# The Moneytizer API! 🚀
+# 🚀 The Estimator 🚀
 '''
 )
 
-# Add logo at the beginning
-
-
-
 # Parameters in the form
 with st.form(key='params_for_api'):
-    st.write("Fill in the information")
+    st.markdown('''#### Provide the infos of your website and get your estimation 💸''')
 
     # Site URL
-    site_url = st.text_input('Give an url', 'https://www.larousse.fr/')
-
-    # Blocklist_value -> found what it is
-    if st.checkbox('Would you like to prevent some publishers to post on your website?'):
-        blocklist_value = 1
-    else :
-        blocklist_value = 0
+    site_url = st.text_input('What is your website url ? 🌐', 'https://www.larousse.fr/')
 
     # Geo
     available_geos = ['FR',
@@ -51,10 +49,16 @@ with st.form(key='params_for_api'):
                 'NG',
                 'Other']
 
-    geo = st.selectbox('Select a country', available_geos)
+    geo = st.selectbox('Where is the majority of your audience living ? 🌍', available_geos)
+
+    # Blocklist_value -> found what it is
+    if st.checkbox('Would you like to prevent some publishers to post on your website ? ⛔'):
+        blocklist_value = 1
+    else :
+        blocklist_value = 0
 
     # Ads format to select
-    st.write('Please select the ads the website owner can place?')
+    st.write('Which ad formats would you like to display on your website ? Tick as many as you wish ! ✔️')
 
     columns = st.columns(5)
     global ads_format_list
@@ -68,11 +72,11 @@ with st.form(key='params_for_api'):
             ads_format_answer.append(0)
 
     # Submit button form
-    form_button = st.form_submit_button("Get the details!")
+    form_button = st.form_submit_button("Get your estimation ! 🙃")
 
 
     # Get params for API request
-    api_url = 'https://usecasetmzimage-2y534oizmq-ew.a.run.app/predict'
+    api_url = 'http://127.0.0.1:8000/predict'
 
     def get_api_params(site_url, blocklist_value=0, geo='Other', ads_format_answer=[]):
         dicto = {'site_url' : site_url,
@@ -85,10 +89,13 @@ with st.form(key='params_for_api'):
 
 # API request and answer when button submitted
 if form_button:
-    params = get_api_params(site_url, blocklist_value, geo, ads_format_answer)
+    with st.spinner('Estimation in progress...'):
 
-    response = requests.get(api_url, params=params).json()
+        params = get_api_params(site_url, blocklist_value, geo, ads_format_answer)
 
+        response = requests.get(api_url, params=params).json()
+
+    # Display sth fun once the result is available
     st.balloons()
 
     # KPIs retrieved from our API of prediction
@@ -111,13 +118,14 @@ if form_button:
     Category = response.get('Category')
     EstimatedMonthlyVisits = response.get('EstimatedMonthlyVisits')
 
-    # # Write the result for test
-    # st.write(params)
-    # st.write('The Lighthouse score is: ', lighthouse_score)
-    # st.write(TTFB, Social)
-
     # CA prediction
-    st.write('The estimated CA is: ', estimated_ca)
+    # st.write('The estimated CA is: ', estimated_ca)
+    # st.markdown('''
+    #             ### Your estimated CA is:
+    #             ''')
+    columns_2 = st.columns(3)
+    columns_2[1].metric("Your estimated CA is", round(estimated_ca, 2))
+
 
     # Highlight major KPIs
     col1, col2, col3, col4 = st.columns(4)
@@ -127,7 +135,8 @@ if form_button:
     col4.metric("Page Per Visit", round(PagePerVisit, 2))
 
     # Display category website
-    st.write('Website Category: ', Category.title())
+    columns_3 = st.columns([1, 3])
+    columns_3[0].metric('Website Category: ', Category.title())
 
     # Traffic repartition
     labels = ['Social', 'Mail', 'Referrals', 'Search', 'Direct']
@@ -138,14 +147,10 @@ if form_button:
         dict_kpis[i] = j
 
     hist_values = pd.DataFrame(dict_kpis, index=[0])
-    # st.dataframe(hist_values)
-    # pd.DataFrame(data=y, index=[0], columns=['Social', 'Mail', 'Referrals', 'Search', 'Direct'])
-
-    # st.bar_chart(x=labels, y=y)
     fig, ax = plt.subplots()
-    ax.bar(x=labels, height=y)
+    ax.bar(x=labels, height=y, color=['blue', 'red', 'yellow', 'green'])
 
-    st.pyplot(fig)
+    columns_3[1].pyplot(fig)
 
     # # Pie chart
     # y = np.array([Social, Mail, Referrals, Search, Direct])
