@@ -63,7 +63,7 @@ with st.form(key='params_for_api'):
     columns = st.columns(5)
     global ads_format_list
     # ads_format_list = [1, 2, 3, 4, 5, 6, 11, 15, 16, 19, 20, 24, 27, 28, 30, 31, 34, 38, 39, 43, 44, 46]
-    ads_format_list = ['Megabanner', 'Pave Haut', 'Grand Angle', 'Skyscraper', 'Billboard', 'Megabanner Bas', 'Pave Bas', 'Mega Skyscrapper', 'Habillage', 'Reco Contenu', 'Footer', 'In Feed', 'Pre-roll', 'Native', 'In-Image', 'Pop Under']
+    ads_format_list = ['Megabanner', 'Pave Haut', 'Grand Angle', 'Skyscraper', 'Billboard', 'Footer', 'Pave Bas', 'Mega Skyscrapper', 'Habillage', 'Reco Contenu', 'Megabanner Bas', 'In Feed', 'Pre-roll', 'Native', 'In-Image', 'Pop Under']
     ads_format_answer = []
     column_num = 0
     for i, e in enumerate(ads_format_list):
