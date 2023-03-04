@@ -24,7 +24,7 @@ with st.form(key='params_for_api'):
     st.markdown('''#### Provide the infos of your website and get your estimation 💸''')
 
     # Site URL
-    site_url = st.text_input('What is your website url ? 🌐', 'https://www.larousse.fr/')
+    site_url = st.text_input('What is your website url ? 🌐', 'https://lebusmagique.fr')
 
     # Geo
     available_geos = ['FR',
@@ -122,7 +122,7 @@ if form_button:
     # CA prediction
     st.markdown('''### Your estimated daily revenue is:''')
     columns_2 = st.columns(3)
-    columns_2[1].metric("  ", f'{round(estimated_ca, 2)}€')
+    columns_2[1].metric("  ", f'{round(estimated_ca *10, 2)}€')
     st.markdown('''
                 ###### Additional insights about your website:
                 ''')
