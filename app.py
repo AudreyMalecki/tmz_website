@@ -120,7 +120,6 @@ if form_button:
     EstimatedMonthlyVisits = numerize.numerize(int(response.get('EstimatedMonthlyVisits'))) if response.get('EstimatedMonthlyVisits') != 'Not found' else 'Not found'
 
     # CA prediction
-    # st.write('The estimated CA is: ', estimated_ca)
     st.markdown('''### Your estimated daily revenue is:''')
     columns_2 = st.columns(3)
     columns_2[1].metric("  ", f'{round(estimated_ca, 2)}€')
@@ -161,25 +160,11 @@ if form_button:
     image_clustering = Image.open('images/3d_clustering_zoom.png')
     columns_3[1].image(image_clustering, use_column_width=True, caption='Location within Data Clustering')
 
-    # # Pie chart
-    # y = np.array([Social, Mail, Referrals, Search, Direct])
-
-    # fig, ax = plt.subplots()
-    # ax.pie(y, labels=['Social', 'Mail', 'Referrals', 'Search', 'Direct'])
-    # fig.legend()
-
-    # st.pyplot(fig)
-
-    # # Map to localize the web site
-    # def geocode(address):
-    #     params = { "q": address, 'format': 'json' }
-    #     places = requests.get(f"https://nominatim.openstreetmap.org/search", params=params).json()
-    #     return [places[0]['lat'], places[0]['lon']]
-
-    # coordinates = {
-    #     'latitude': [float(geocode(geo)[0])],
-    #     'longitude': [float(geocode(geo)[1])]
-    # }
-
-    # df = pd.DataFrame(coordinates)
-    # st.map(coordinates)
+else:
+    # CA prediction
+    st.markdown('''### Your estimated daily revenue is:''')
+    columns_2 = st.columns(3)
+    columns_2[1].metric("  ", f'? €')
+    st.markdown('''
+                ###### Additional insights about your website:
+                ''')
