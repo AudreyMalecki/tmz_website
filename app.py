@@ -121,9 +121,9 @@ if form_button:
 
     # CA prediction
     # st.write('The estimated CA is: ', estimated_ca)
-    st.markdown('''### Your estimated CA is:''')
+    st.markdown('''### Your estimated daily revenue is:''')
     columns_2 = st.columns(3)
-    columns_2[1].metric("  ", round(estimated_ca, 2))
+    columns_2[1].metric("  ", f'{round(estimated_ca, 2)}€')
     st.markdown('''
                 ###### Additional insights about your website:
                 ''')
