@@ -162,9 +162,20 @@ if form_button:
 
 else:
     # CA prediction
+    st.write('  ')
     st.markdown('''### Your estimated daily revenue is:''')
     columns_2 = st.columns(3)
     columns_2[1].metric("  ", f'? €')
     st.markdown('''
                 ###### Additional insights about your website:
                 ''')
+
+    # Highlight major KPIs
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Lighthouse Score", f'? %')
+    col2.metric("Bounce Rate", f'? %')
+    col3.metric("Estimated Monthly Visits", f'?')
+    col4.metric("Page Per Visit", f'?')
+
+    # Display category website
+    st.write('Website Category: ', f'?')
